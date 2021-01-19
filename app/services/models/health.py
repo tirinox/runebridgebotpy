@@ -10,7 +10,7 @@ class QueueInfo:
     txout: int = 0
 
     @classmethod
-    def from_json(cls, j):
+    def from_api_json(cls, j):
         return cls(
             txin=int(j['txin']),
             txout=int(j['txout']),
@@ -30,7 +30,7 @@ class JobsInfo:
     total_rune: int = 0
 
     @classmethod
-    def from_json(cls, j):
+    def from_api_json(cls, j):
         return cls(
             total=int(j['total']),
             active=int(j['active']),
@@ -55,16 +55,28 @@ class BridgeHealth(BaseModelMixin):
     errors: int = 0
     ignore: int = 0
 
+    STATUS_LIVE = 'LIVE'
+    STATUS_OFFLINE = 'OFFLINE'
+
+    HEALTH_NOMINAL = 'NOMINAL'
+
     @classmethod
-    def from_jsons(cls, main_json, stats_json):
+    def from_api_json(cls, main_json, stats_json):
         return cls(
-            status=main_json['status'],
-            health=main_json['health'],
+            status=str(main_json['status']).upper(),
+            health=str(main_json['health']).upper(),
             bridges=main_json['bridges'],
             asset_min=int(main_json['asset']['min']),
             asset_max=int(main_json['asset']['max']),
-            queue=QueueInfo.from_json(stats_json['queue']),
-            jobs=JobsInfo.from_json(stats_json['jobs']),
+            queue=QueueInfo.from_api_json(stats_json['queue']),
+            jobs=JobsInfo.from_api_json(stats_json['jobs']),
             errors=int(stats_json['other']['errors']),
             ignore=int(stats_json['other']['ignore']),
+        )
+
+    @classmethod
+    def make_offline(cls, reason=''):
+        return cls(
+            status=cls.STATUS_OFFLINE,
+            health=reason
         )

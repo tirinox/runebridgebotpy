@@ -37,6 +37,13 @@ def pretty_dollar(x):
     return pretty_money(x, '$')
 
 
+RAIDO_GLYPH = 'ᚱ'
+
+
+def pretty_rune(x):
+    return pretty_money(x, RAIDO_GLYPH)
+
+
 def pretty_money(x, prefix='', signed=False):
     if x < 0:
         return f"-{prefix}{pretty_money(-x)}"

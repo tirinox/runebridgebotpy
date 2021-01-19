@@ -7,11 +7,14 @@ class MainMenuDialog(BaseDialog):
     @message_handler(commands='start,lang', state='*')
     async def entry_point(self, message: Message):
         await self.deps.broadcaster.register_user(message.from_user.id)
-        await message.answer('heeloll')
+        await message.answer('Hello!')
 
     @message_handler(commands='info', state='*')
     async def info_command(self, message: Message):
-        await message.answer('info here!')
+        info = await self.deps.health_fetch.fetch()
+        await message.answer(self.loc.current_info(info),
+                             disable_notification=True,
+                             disable_web_page_preview=True)
 
     @message_handler(commands='stop', state='*')
     async def stop_command(self, message: Message):

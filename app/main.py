@@ -54,11 +54,11 @@ class App:
 
         health_notifier = HealthNotifier(d)
 
-        health_fetch = HealthFetcher(d)
-        health_fetch.subscribe(health_notifier)
+        d.health_fetch = HealthFetcher(d)
+        d.health_fetch.subscribe(health_notifier)
 
         await asyncio.gather(*(task.run() for task in [
-            health_fetch
+            d.health_fetch
         ]))
 
     async def on_startup(self, _):
