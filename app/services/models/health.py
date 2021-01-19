@@ -35,6 +35,7 @@ class JobsInfo:
             total=int(j['total']),
             active=int(j['active']),
             pending=int(j['pending']),
+            completed=int(j['completed']),
             eth_tx=int(j['eth_tx']),
             bnb_tx=int(j['bnb_tx']),
             eth_rune=int(j['eth_rune']),
