@@ -1,0 +1,43 @@
+version: "3.3"
+services:
+  runebridgebot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - brdige-redis-net
+    volumes:
+      - ./app:/app
+
+  redis:
+    image: "redis:alpine"
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - brdige-redis-net
+    restart: always
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    expose:
+      - "${REDIS_PORT}"
+    command:
+      - 'redis-server'
+      - '--save 900 1'
+      - '--save 300 10'
+      - '--save 60 10000'
+      - '--port ${REDIS_PORT}'
+      - '--requirepass ${REDIS_PASSWORD}'
+
+networks:
+  brdige-redis-net:
+
+volumes:
+  redis_data:
+  app:

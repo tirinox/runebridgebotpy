@@ -1,0 +1,6 @@
+log_level: INFO
+
+telegram:
+  bot:
+    token: 12345:tgBotToken
+
