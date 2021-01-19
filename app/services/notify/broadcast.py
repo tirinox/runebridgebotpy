@@ -100,6 +100,9 @@ class Broadcaster:
         :param kwargs:
         :return: Count of messages sent
         """
+        if not chat_ids:
+            return 0
+
         async with self._broadcast_lock:
             count = 0
             bad_ones = []

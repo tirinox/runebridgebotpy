@@ -9,11 +9,13 @@ from aiogram.types import *
 
 from localization import LocalizationManager
 from services.dialog import init_dialogs
+from services.fetch.health import HealthFetcher
 from services.lib.config import Config
 from services.lib.db import DB
 from services.lib.depcont import DepContainer
 from services.notify.broadcast import Broadcaster
-from services.notify.types.bridge_notify import CapFetcherNotifier
+
+from services.notify.types.bridge_health_notify import HealthNotifier
 
 
 class App:
@@ -47,15 +49,16 @@ class App:
         if self.deps.dp:
             self.deps.dp.storage = await self.deps.db.get_storage()
 
-
     async def _run_background_jobs(self):
         d = self.deps
 
-        # fetcher_cap = CapInfoFetcher(d, ppf=self.ppf)
-        # fetcher_cap.subscribe(notifier_cap)
+        health_notifier = HealthNotifier(d)
+
+        health_fetch = HealthFetcher(d)
+        health_fetch.subscribe(health_notifier)
 
         await asyncio.gather(*(task.run() for task in [
-            # fetcher_cap,
+            health_fetch
         ]))
 
     async def on_startup(self, _):

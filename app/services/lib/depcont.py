@@ -18,3 +18,7 @@ class DepContainer:
     bot: typing.Optional['Bot'] = None
     dp: typing.Optional['Dispatcher'] = None
 
+    broadcaster: typing.Optional['Broadcaster'] = None
+
+    health_fetch: typing.Optional['HealthFetcher'] = None
+

@@ -4,3 +4,7 @@ telegram:
   bot:
     token: 12345:tgBotToken
 
+bridge:
+  eth:
+    api: https://runebridgeapi.herokuapp.com
+    period: 5
