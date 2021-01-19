@@ -1,10 +1,9 @@
 from abc import ABC
 
-from services.lib.money import pretty_money, short_address, pretty_rune
-from services.lib.texts import code, bold, link
+from services.lib.money import pretty_money, pretty_rune
+from services.lib.texts import code, bold
 from services.models.health import BridgeHealth
 from services.models.job import JobTxInfo, eth_link, bnb_link, CHAIN_BNB, CHAIN_ETH
-
 
 CREATOR_TG = '@account1242'
 
@@ -16,7 +15,6 @@ class BaseLocalization(ABC):  # == English
     STATUS_UNKNOWN = 'Unknown 🧶'
 
     def current_info(self, health: BridgeHealth):
-
         health_str = '🟢 Nominal' if health.health == health.HEALTH_NOMINAL else f'🔴 {health.health}'
         status_str = '🟢 Live' if health.status == health.STATUS_LIVE else f'🔴 {health.status}'
         return (

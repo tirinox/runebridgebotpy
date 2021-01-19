@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from services.lib.datetime import datetime_from_rfc
+from services.lib.datetime import parse_iso8601_date_to_timestamp
 from services.lib.money import short_address
 from services.lib.texts import link
 from services.models.base import BaseModelMixin
@@ -27,7 +27,7 @@ class BridgeTxInfo:
     from_addr: str = ''
     to_addr: str = ''
     hash: str = ''
-    time: int = 0
+    time: float = 0
 
     @property
     def link(self):
@@ -46,7 +46,7 @@ class BridgeTxInfo:
             from_addr=str(j.get('from', '')),
             to_addr=str(j.get('to', '')),
             hash=str(j['hash']),
-            time=datetime_from_rfc(str(j['time'])).timestamp()
+            time=parse_iso8601_date_to_timestamp(j['time'])
         )
 
 
@@ -55,7 +55,8 @@ class JobTxInfo(BaseModelMixin):
     ident: str = ''
     status: str = ''
     chain: str = ''
-    intx_time: int = 0
+    in_tx_time: float = 0
+    out_tx_time: float = 0
     in_tx: BridgeTxInfo = BridgeTxInfo()
     out_tx: BridgeTxInfo = BridgeTxInfo()
 
@@ -69,7 +70,8 @@ class JobTxInfo(BaseModelMixin):
             ident=str(j['id']),
             status=str(j['status']).upper(),
             chain=str(j['chain']),
-            intx_time=datetime_from_rfc(str(j['events']['intx'])).timestamp(),
+            in_tx_time=parse_iso8601_date_to_timestamp(str(j['events']['intx'])),
+            out_tx_time=parse_iso8601_date_to_timestamp(str(j['events']['outtx'])),
             in_tx=BridgeTxInfo.from_api_json(j['in']),
             out_tx=BridgeTxInfo.from_api_json(j['out']),
         )

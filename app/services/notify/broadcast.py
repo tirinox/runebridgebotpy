@@ -2,8 +2,9 @@ import asyncio
 import logging
 import random
 import time
-from typing import Iterable
+from typing import Iterable, List
 
+from aiogram.types import Message
 from aiogram.utils import exceptions
 
 from localization import LocalizationManager
@@ -42,7 +43,7 @@ class Broadcaster:
 
         await self.broadcast(user_lang_map.keys(), message_gen)
 
-    async def _send_message(self, chat_id, text, message_type=MessageType.TEXT, *args, **kwargs) -> bool:
+    async def _send_message(self, chat_id, text, message_type=MessageType.TEXT, *args, **kwargs) -> (bool, Message):
         """
         Safe messages sender
         :param chat_id:
@@ -50,15 +51,16 @@ class Broadcaster:
         :param disable_notification:
         :return:
         """
+        result = None
         try:
             if message_type == MessageType.TEXT:
-                await self.bot.send_message(chat_id, text, *args, **kwargs)
+                result = await self.bot.send_message(chat_id, text, *args, **kwargs)
             elif message_type == MessageType.STICKER:
                 del kwargs['disable_web_page_preview']
-                await self.bot.send_sticker(chat_id, sticker=text, *args, **kwargs)
+                result = await self.bot.send_sticker(chat_id, sticker=text, *args, **kwargs)
             elif message_type == MessageType.PHOTO:
                 del kwargs['disable_web_page_preview']
-                await self.bot.send_photo(chat_id, caption=text, *args, **kwargs)
+                result = await self.bot.send_photo(chat_id, caption=text, *args, **kwargs)
         except exceptions.BotBlocked:
             self.logger.error(f"Target [ID:{chat_id}]: blocked by user")
         except exceptions.ChatNotFound:
@@ -71,11 +73,11 @@ class Broadcaster:
             self.logger.error(f"Target [ID:{chat_id}]: user is deactivated")
         except exceptions.TelegramAPIError:
             self.logger.exception(f"Target [ID:{chat_id}]: failed")
-            return True  # tg error is not the reason to exclude the user
+            return True, result  # tg error is not the reason to exclude the user
         else:
             self.logger.info(f"Target [ID:{chat_id}]: success")
-            return True
-        return False
+            return True, result
+        return False, result
 
     def sort_and_shuffle_chats(self, chat_ids):
         numeric_ids = [i for i in chat_ids if isinstance(i, int)]
@@ -89,7 +91,7 @@ class Broadcaster:
         return non_numeric_ids + multi_chats + user_dialogs
 
     async def broadcast(self, chat_ids: Iterable, message, delay=0.075,
-                        message_type=MessageType.TEXT, *args, **kwargs) -> int:
+                        message_type=MessageType.TEXT, *args, **kwargs) -> List[Message]:
         """
         Simple broadcaster
         :param message_type: see MessageType
@@ -101,10 +103,10 @@ class Broadcaster:
         :return: Count of messages sent
         """
         if not chat_ids:
-            return 0
+            return []
 
         async with self._broadcast_lock:
-            count = 0
+            sent_messages = []
             bad_ones = []
 
             try:
@@ -125,19 +127,21 @@ class Broadcaster:
                             text = message
 
                     if text or 'photo' in extra:
-                        if await self._send_message(chat_id, text, message_type=message_type,
-                                                    disable_web_page_preview=True,
-                                                    disable_notification=False, **extra):
-                            count += 1
+                        result, sent_message = await self._send_message(
+                            chat_id, text, message_type=message_type,
+                            disable_web_page_preview=True,
+                            disable_notification=False, **extra)
+                        if result:
+                            sent_messages.append(sent_message)
                         else:
                             bad_ones.append(chat_id)
                         await asyncio.sleep(delay)  # 10 messages per second (Limit: 30 messages per second)
 
                 await self.remove_users(bad_ones)
             finally:
-                self.logger.info(f"{count} messages successful sent (of {len(chat_ids)})")
+                self.logger.info(f"{len(sent_messages)} messages successful sent (of {len(chat_ids)})")
 
-            return count
+            return sent_messages
 
     async def register_user(self, chat_id):
         chat_id = str(int(chat_id))

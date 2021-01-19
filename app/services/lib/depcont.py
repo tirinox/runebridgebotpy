@@ -22,4 +22,5 @@ class DepContainer:
     broadcaster: typing.Optional['Broadcaster'] = None
 
     health_fetch: typing.Optional['HealthFetcher'] = None
+    job_fetch: typing.Optional['BridgeJobsFetcher'] = None
 

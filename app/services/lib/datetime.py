@@ -1,4 +1,5 @@
 from datetime import datetime
+import dateutil.parser as dateparser
 
 
 MINUTE = 60
@@ -104,5 +105,10 @@ def format_time_ago_short(d, now=None):
     return f'{days}{hours:02}:{minutes:02}'
 
 
-def datetime_from_rfc(rfc: str):
-    return datetime.strptime(rfc, '%Y-%m-%dT%H:%M:%S.%f')
+def parse_iso8601_date_to_timestamp(iso_str: str) -> float:
+    if not iso_str:
+        return 0
+    try:
+        return dateparser.parse(iso_str).timestamp()
+    except (ValueError, TypeError):
+        return 0
