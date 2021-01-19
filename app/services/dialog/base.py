@@ -18,6 +18,7 @@ logger = logging.getLogger('DIALOGS')
 async def display_error(message: Message, e: Exception):
     tag = secrets.token_hex(8)
     logger.exception(f"TAG: {tag}")
+    # fixme: move this message to Localization + use CREATOR_TG from the config
     await message.answer(code(f"Sorry! An error occurred: {str(e)}. Incident ID is {tag}.") +
                          f"\nFeedback/support: {CREATOR_TG}.")
 

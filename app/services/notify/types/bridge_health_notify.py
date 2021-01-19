@@ -13,4 +13,4 @@ class HealthNotifier(INotified):
 
     async def on_data(self, sender, data):
         users = await self.deps.broadcaster.all_users()
-        await self.deps.broadcaster.broadcast(users, 'test')
+        await self.deps.broadcaster.broadcast(users, f'{data}')
