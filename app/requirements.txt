@@ -20,3 +20,4 @@ tqdm==4.55.0
 typing-extensions==3.7.4.3
 ujson==4.0.1
 yarl==1.6.3
+dataclasses-serialization==1.3.1
