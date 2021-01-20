@@ -107,8 +107,8 @@ def format_time_ago_short(d, now=None):
 
 def parse_iso8601_date_to_timestamp(iso_str: str) -> float:
     if not iso_str:
-        return 0
+        return 0.0
     try:
         return dateparser.parse(iso_str).timestamp()
     except (ValueError, TypeError):
-        return 0
+        return 0.0

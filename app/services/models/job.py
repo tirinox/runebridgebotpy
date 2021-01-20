@@ -23,11 +23,11 @@ def bnb_link(bnb_addr, full=False):
 class BridgeTxInfo:
     chain: str = ''
     block: int = 0
-    amount: float = 0
+    amount: float = 0.0
     from_addr: str = ''
     to_addr: str = ''
     hash: str = ''
-    time: float = 0
+    time: float = 0.0
 
     @property
     def link(self):
@@ -55,8 +55,8 @@ class JobTxInfo(BaseModelMixin):
     ident: str = ''
     status: str = ''
     chain: str = ''
-    in_tx_time: float = 0
-    out_tx_time: float = 0
+    in_tx_time: float = 0.0
+    out_tx_time: float = 0.0
     in_tx: BridgeTxInfo = BridgeTxInfo()
     out_tx: BridgeTxInfo = BridgeTxInfo()
 

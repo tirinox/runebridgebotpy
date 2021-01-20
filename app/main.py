@@ -10,7 +10,7 @@ from aiogram.types import *
 from localization import LocalizationManager
 from services.dialog import init_dialogs
 from services.fetch.health import HealthFetcher
-from services.fetch.jobs import BridgeJobsFetcher
+from services.fetch.jobs import BridgeJobsFetcher, MockBridgeJobsFetcher
 from services.lib.config import Config
 from services.lib.db import DB
 from services.lib.depcont import DepContainer
@@ -60,7 +60,8 @@ class App:
         d.health_fetch.subscribe(health_notifier)
 
         job_processor = JobsProcessor(d)
-        d.job_fetch = BridgeJobsFetcher(d)
+        # d.job_fetch = BridgeJobsFetcher(d)
+        d.job_fetch = MockBridgeJobsFetcher(d)
         d.job_fetch.subscribe(job_processor)
 
         await asyncio.gather(*(task.run() for task in [
