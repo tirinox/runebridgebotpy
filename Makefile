@@ -33,7 +33,7 @@ pull:
 	@git pull
 
 logs:
-	@docker-compose logs -f --tail 1000 thtgbot
+	@docker-compose logs -f --tail 1000 runebridgebot
 
 clean:
 	@docker system prune --volumes --force
