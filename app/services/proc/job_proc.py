@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import List
 
@@ -32,10 +33,13 @@ class JobsProcessor(INotified):
             if current_job.status != old_job.status:
                 jobs_update_ids.add(job_id)
 
-        for job_id in jobs_added_ids:
-            await self.notifier.notify_new_job(fresh_jobs[job_id])
-
-        for job_id in jobs_update_ids:
-            await self.notifier.edit_job(fresh_jobs[job_id])
+        await self._notify_all(fresh_jobs, jobs_added_ids, jobs_update_ids)
 
         self.prev_jobs = fresh_jobs  # swap buffers!
+
+    async def _notify_all(self, fresh_jobs, jobs_added_ids, jobs_update_ids):
+        await self.notifier.update_users()
+        for job_id in jobs_added_ids:
+            asyncio.create_task(self.notifier.notify_new_job(fresh_jobs[job_id]))
+        for job_id in jobs_update_ids:
+            asyncio.create_task(self.notifier.edit_job(fresh_jobs[job_id]))

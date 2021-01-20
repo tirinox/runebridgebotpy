@@ -64,6 +64,10 @@ class JobTxInfo(BaseModelMixin):
     STATUS_PENDING = 'PENDING'
     STATUS_COMPLETED = 'COMPLETED'
 
+    @property
+    def is_completed(self):
+        return self.status == self.STATUS_COMPLETED
+
     @classmethod
     def from_api_json(cls, j):
         return cls(

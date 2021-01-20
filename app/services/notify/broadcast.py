@@ -43,6 +43,16 @@ class Broadcaster:
 
         await self.broadcast(user_lang_map.keys(), message_gen)
 
+    @staticmethod
+    def remove_bad_args(kwargs, dis_web_preview=False, dis_notification=False):
+        if dis_web_preview:
+            if 'disable_web_page_preview' in kwargs:
+                del kwargs['disable_web_page_preview']
+        if dis_notification:
+            if 'disable_notification' in kwargs:
+                del kwargs['disable_notification']
+        return kwargs
+
     async def _send_message(self, chat_id, text, message_type=MessageType.TEXT, *args, **kwargs) -> (bool, Message):
         """
         Safe messages sender
@@ -56,11 +66,17 @@ class Broadcaster:
             if message_type == MessageType.TEXT:
                 result = await self.bot.send_message(chat_id, text, *args, **kwargs)
             elif message_type == MessageType.STICKER:
-                del kwargs['disable_web_page_preview']
+                kwargs = self.remove_bad_args(kwargs, dis_web_preview=True)
                 result = await self.bot.send_sticker(chat_id, sticker=text, *args, **kwargs)
             elif message_type == MessageType.PHOTO:
-                del kwargs['disable_web_page_preview']
+                kwargs = self.remove_bad_args(kwargs, dis_web_preview=True)
                 result = await self.bot.send_photo(chat_id, caption=text, *args, **kwargs)
+            elif message_type == MessageType.EDIT_TEXT:
+                kwargs = self.remove_bad_args(kwargs, dis_notification=True)
+                result = await self.bot.edit_message_text(text, chat_id, *args, **kwargs)
+        except exceptions.MessageToEditNotFound:
+            self.logger.error(f"Target [ID:{chat_id}]: message not found to edit")
+            return True, None
         except exceptions.BotBlocked:
             self.logger.error(f"Target [ID:{chat_id}]: blocked by user")
         except exceptions.ChatNotFound:
@@ -91,17 +107,9 @@ class Broadcaster:
         return non_numeric_ids + multi_chats + user_dialogs
 
     async def broadcast(self, chat_ids: Iterable, message, delay=0.075,
-                        message_type=MessageType.TEXT, *args, **kwargs) -> List[Message]:
-        """
-        Simple broadcaster
-        :param message_type: see MessageType
-        :param chat_ids: list of chat ids
-        :param message: message string or sticker id
-        :param delay: anti-spam delay
-        :param args:
-        :param kwargs:
-        :return: Count of messages sent
-        """
+                        message_type=MessageType.TEXT,
+                        shuffle_chats=False,
+                        *args, **kwargs) -> List[Message]:
         if not chat_ids:
             return []
 
@@ -110,10 +118,15 @@ class Broadcaster:
             bad_ones = []
 
             try:
-                chat_ids = self.sort_and_shuffle_chats(chat_ids)
+                if shuffle_chats:
+                    chat_ids = self.sort_and_shuffle_chats(chat_ids)
 
                 for chat_id in chat_ids:
                     extra = {}
+                    if isinstance(chat_id, tuple):  # if edit
+                        chat_id, extra['message_id'] = chat_id
+
+                    text = ''
                     if isinstance(message, str):
                         text = message
                     elif callable(message):

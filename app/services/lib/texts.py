@@ -11,6 +11,7 @@ class MessageType(Enum):
     TEXT = 'text'
     STICKER = 'sticker'
     PHOTO = 'photo'
+    EDIT_TEXT = 'edit_text'
 
 
 @dataclass

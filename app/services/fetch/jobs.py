@@ -1,14 +1,12 @@
-import asyncio
 import json
+import os
+
+from dataclasses_serialization.json import JSONSerializer
 
 from services.fetch.base import BaseFetcher
 from services.lib.depcont import DepContainer
 from services.lib.utils import async_wrap
-from services.models.health import BridgeHealth
 from services.models.job import JobTxInfo
-from dataclasses_serialization.json import JSONSerializer
-
-import os
 
 
 class BridgeJobsFetcher(BaseFetcher):
@@ -32,6 +30,9 @@ class BridgeJobsFetcher(BaseFetcher):
 
 
 class MockBridgeJobsFetcher(BridgeJobsFetcher):
+    """
+    Use this to test notification on the real world data without doing any real TX
+    """
     RECORDED_DIR = 'tools/recorded_jobs'
 
     def __init__(self, deps: DepContainer, path=None):

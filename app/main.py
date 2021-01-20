@@ -60,8 +60,8 @@ class App:
         d.health_fetch.subscribe(health_notifier)
 
         job_processor = JobsProcessor(d)
-        # d.job_fetch = BridgeJobsFetcher(d)
-        d.job_fetch = MockBridgeJobsFetcher(d)
+        d.job_fetch = BridgeJobsFetcher(d)
+        # d.job_fetch = MockBridgeJobsFetcher(d)
         d.job_fetch.subscribe(job_processor)
 
         await asyncio.gather(*(task.run() for task in [

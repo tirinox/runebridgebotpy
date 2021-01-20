@@ -1,12 +1,10 @@
 from datetime import datetime
 import dateutil.parser as dateparser
 
-
 MINUTE = 60
 HOUR = 60 * 60
 DAY = 24 * 60 * 60
 MONTH = 30 * 24 * 60 * 60
-
 
 
 def now_ts() -> float:

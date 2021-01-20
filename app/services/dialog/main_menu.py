@@ -7,7 +7,9 @@ class MainMenuDialog(BaseDialog):
     @message_handler(commands='start,lang', state='*')
     async def entry_point(self, message: Message):
         await self.deps.broadcaster.register_user(message.from_user.id)
-        await message.answer('Hello!')
+        await message.answer(self.loc.entry_message(),
+                             disable_web_page_preview=True,
+                             disable_notification=True)
 
     @message_handler(commands='info', state='*')
     async def info_command(self, message: Message):

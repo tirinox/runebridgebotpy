@@ -9,6 +9,16 @@ CREATOR_TG = '@account1242'
 
 
 class BaseLocalization(ABC):  # == English
+    @staticmethod
+    def entry_message():
+        return (
+                bold("Hello!") +
+                f"\n\n"
+                f"Commands are:\n"
+                f"1. /info - get current status of the ETH bridge\n"
+                f"2. /stop - unsubscribe from all pushes"
+        )
+
     STATUS_RECEIVED = 'Received 🆕'
     STATUS_SENDING = 'Sending 🔁'
     STATUS_COMPLETED = 'Completed ✅'
@@ -29,7 +39,7 @@ class BaseLocalization(ABC):  # == English
                 f"{bold('BNB Bridge:')} {bnb_link(health.bridges.get(CHAIN_BNB, '???'), full=True)}\n"
                 f"{bold('ETH Bridge:')} {eth_link(health.bridges.get(CHAIN_ETH, '???'), full=True)}\n"
                 f"\n"
-                f"{bold('Queue:')} {health.queue.txin} IN → {health.queue.txout} OUT\n"
+                f"{bold('Queue:')} {health.queue.txin} IN ➔ {health.queue.txout} OUT\n"
                 f"{bold('Total:')} {health.jobs.total}\n"
                 f"{bold('Completed:')} {health.jobs.completed}\n"
                 f"{bold('Queued:')} {health.jobs.active}\n"
@@ -48,20 +58,20 @@ class BaseLocalization(ABC):  # == English
         hash_str = bold(f'Hash: {tx.ident}')
 
         str_status = {
+            tx.STATUS_ACTIVE: self.STATUS_RECEIVED,
+            tx.STATUS_PENDING: self.STATUS_SENDING,
             tx.STATUS_COMPLETED: self.STATUS_COMPLETED,
-            tx.STATUS_ACTIVE: self.STATUS_SENDING,
-            tx.STATUS_PENDING: self.STATUS_RECEIVED
         }.get(tx.status, self.STATUS_UNKNOWN)
 
         return (
             f"{hash_str}\n"
             f"\n"
-            f"{bold('Direction:')} {tx.from_chain} → {tx.to_chain}\n"
+            f"{bold('Direction:')} {tx.from_chain} ➔ {tx.to_chain}\n"
             f"{bold('Amount:')} {pretty_money(tx.in_tx.amount)} RUNE\n"
-            f"{bold('From:')} {tx.in_tx.link}\n",
+            f"{bold('From:')} {tx.in_tx.link}\n"
             f"{bold('To:')} {tx.out_tx.link}\n"
             f"\n"
-            f"{bold(str_status)}",
+            f"{bold(str_status)}"
         )
 
     @staticmethod
