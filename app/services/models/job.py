@@ -41,7 +41,7 @@ class BridgeTxInfo:
     def from_api_json(cls, j):
         return cls(
             chain=str(j['chain']),
-            block=int(j['block']),
+            block=int(j['block']) if j['block'] is not None else 0,
             amount=float(j['amount']),
             from_addr=str(j.get('from', '')),
             to_addr=str(j.get('to', '')),

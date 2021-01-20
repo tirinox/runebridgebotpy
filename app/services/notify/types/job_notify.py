@@ -12,8 +12,7 @@ class JobStatusNotifier:
     async def notify_new_job(self, job: JobTxInfo):
         # 1. if not completed => register message for editing
         # 2. if completed => remove
-        ...
+        print(f'new job {job}')
 
     async def edit_job(self, job: JobTxInfo):
-        # 1.
-        ...
+        print(f'edited job {job}')

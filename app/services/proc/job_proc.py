@@ -23,7 +23,7 @@ class JobsProcessor(INotified):
         fresh_jobs_ids = set(fresh_jobs.keys())
         prev_jobs_ids = set(self.prev_jobs.keys())
         jobs_added_ids = fresh_jobs_ids - prev_jobs_ids
-        jobs_old_ids = fresh_jobs_ids | prev_jobs_ids
+        jobs_old_ids = fresh_jobs_ids & prev_jobs_ids  # intersection
 
         jobs_update_ids = set()
         for job_id in jobs_old_ids:
