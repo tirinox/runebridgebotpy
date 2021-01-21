@@ -60,8 +60,12 @@ class App:
         d.health_fetch.subscribe(health_notifier)
 
         job_processor = JobsProcessor(d)
-        d.job_fetch = BridgeJobsFetcher(d)
-        # d.job_fetch = MockBridgeJobsFetcher(d)
+
+        if d.cfg.env_bool('MOCK_JOBS', False):
+            d.job_fetch = MockBridgeJobsFetcher(d)
+        else:
+            d.job_fetch = BridgeJobsFetcher(d)
+
         d.job_fetch.subscribe(job_processor)
 
         await asyncio.gather(*(task.run() for task in [
@@ -76,7 +80,8 @@ class App:
         asyncio.create_task(self._run_background_jobs())
 
     async def on_shutdown(self, _):
-        await self.deps.session.close()
+        if self.deps.session:
+            await self.deps.session.close()
 
     def run_bot(self):
         self.create_bot_stuff()

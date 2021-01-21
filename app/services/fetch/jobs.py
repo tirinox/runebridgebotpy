@@ -37,6 +37,7 @@ class MockBridgeJobsFetcher(BridgeJobsFetcher):
 
     def __init__(self, deps: DepContainer, path=None):
         super().__init__(deps)
+        self.logger.warning('using fake jobs fetcher!')
         self.path = path or self.RECORDED_DIR
         self.files = [f for f in sorted(os.listdir(self.path)) if f.startswith('jobs-') and f.endswith('.json')]
         self.files = [os.path.join(self.path, f) for f in self.files]
