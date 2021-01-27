@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 
 import aiohttp
 import ujson
@@ -15,7 +14,6 @@ from services.lib.config import Config
 from services.lib.db import DB
 from services.lib.depcont import DepContainer
 from services.notify.broadcast import Broadcaster
-
 from services.notify.types.bridge_health_notify import HealthNotifier
 from services.proc.job_proc import JobsProcessor
 
@@ -90,5 +88,5 @@ class App:
 
 
 if __name__ == '__main__':
-    print('-' * 100)
+    logging.info('-' * 100)
     App().run_bot()
