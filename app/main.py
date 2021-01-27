@@ -29,7 +29,7 @@ class App:
             format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S',
         )
-
+        logging.info('-' * 100)
         logging.info(f"Log level: {log_level}")
 
         d.loop = asyncio.get_event_loop()
@@ -88,5 +88,4 @@ class App:
 
 
 if __name__ == '__main__':
-    logging.info('-' * 100)
     App().run_bot()
